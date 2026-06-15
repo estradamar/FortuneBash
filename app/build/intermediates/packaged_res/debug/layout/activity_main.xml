@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    tools:context=".MainActivity">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/input_layout"
+        android:padding="8dp"
+        android:fillViewport="false"
+        android:background="#00000000">
+
+        <TextView
+            android:id="@+id/terminalOutput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textColor="#55FF55"
+            android:textSize="14sp"
+            android:textIsSelectable="true"
+            android:background="#00000000" />
+
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/promptText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="guest@android:~$ "
+            android:textColor="#55FF55"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/commandInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:background="#00000000"
+            android:fontFamily="monospace"
+            android:imeOptions="actionDone|flagNoExtractUi"
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:textColor="#55FF55"
+            android:textSize="14sp"
+            android:textCursorDrawable="@null" />
+
+    </LinearLayout>
+
+</RelativeLayout>
