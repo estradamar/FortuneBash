@@ -1,0 +1,3 @@
+com.example.fortuneterminal.test
+style WhiteBackgroundDialogTheme
+style WhiteBackgroundTheme

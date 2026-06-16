@@ -191,7 +191,7 @@ public class CommandEngine {
             + "  yesorno                - Random yes or no answer.\n"
             + "  date                   - Display current date and time.\n"
             + "  echo [text]            - Repeat the given text.\n"
-            + "  roll [NdX]             - Roll dice (e.g., roll 2d6).\n"
+            + "  roll <min>-<max> [N]   - Pick N random integers in range (e.g., roll 1-7 3).\n"
             + "  matrix                 - Display a matrix rain effect.\n"
             + "  sudo [command]         - Superuser privileges (joke).";
     }
@@ -349,34 +349,56 @@ public class CommandEngine {
     // roll command ------------------------------------------------------------
 
     private String cmdRoll(String args) {
-        int numDice = 1;
-        int numFaces = 6;
+        if (args.isEmpty()) {
+            return "Usage: roll <min>-<max> [count]  (e.g., roll 1-7  or  roll 1-100 3)";
+        }
 
-        if (!args.isEmpty()) {
-            String[] parts = args.toLowerCase(Locale.US).split("d", 2);
-            if (parts.length != 2) {
-                return "Invalid format. Use NdX (e.g., 2d6).";
+        String[] parts = args.trim().split("\\s+", 2);
+        String range = parts[0];
+
+        int count = 1;
+        if (parts.length == 2) {
+            // Strip any non-digit suffix so "3ints" works the same as "3"
+            String countStr = parts[1].replaceAll("[^0-9]", "");
+            if (countStr.isEmpty()) {
+                return "Invalid count. Expected a number (e.g., roll 1-7 3).";
             }
             try {
-                if (!parts[0].isEmpty()) numDice  = Integer.parseInt(parts[0].trim());
-                if (!parts[1].isEmpty()) numFaces = Integer.parseInt(parts[1].trim());
+                count = Integer.parseInt(countStr);
             } catch (NumberFormatException e) {
-                return "Invalid format. Use NdX (e.g., 2d6).";
+                return "Invalid count. Expected a number (e.g., roll 1-7 3).";
             }
         }
 
-        if (numDice < 1 || numDice > 100 || numFaces < 2 || numFaces > 1000) {
-            return "Dice must be 1-100 and faces must be 2-1000.";
+        String[] bounds = range.split("-", 2);
+        if (bounds.length != 2 || bounds[0].isEmpty() || bounds[1].isEmpty()) {
+            return "Invalid range. Use min-max (e.g., roll 1-7).";
         }
 
-        StringBuilder sb = new StringBuilder();
-        int total = 0;
-        for (int i = 0; i < numDice; i++) {
-            int roll = random.nextInt(numFaces) + 1;
-            total += roll;
-            sb.append("Roll ").append(i + 1).append(": ").append(roll).append("\n");
+        int min, max;
+        try {
+            min = Integer.parseInt(bounds[0].trim());
+            max = Integer.parseInt(bounds[1].trim());
+        } catch (NumberFormatException e) {
+            return "Invalid range. Use numbers (e.g., roll 1-7).";
         }
-        sb.append("Total: ").append(total);
+
+        if (min >= max) {
+            return "Min must be less than max (e.g., roll 1-7).";
+        }
+        if (count < 1 || count > 100) {
+            return "Count must be between 1 and 100.";
+        }
+
+        int spread = max - min + 1;
+        if (count == 1) {
+            return String.valueOf(min + random.nextInt(spread));
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            sb.append(min + random.nextInt(spread));
+            if (i < count - 1) sb.append("\n");
+        }
         return sb.toString();
     }
 

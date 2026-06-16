@@ -1,0 +1,7 @@
+#Mon Jun 15 18:55:27 CST 2026
+base.0=C\:\\oficina\\mar\\WA\\studio\\FortuneBash\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeExtDexDebugAndroidTest\\classes.dex
+base.1=C\:\\oficina\\mar\\WA\\studio\\FortuneBash\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeProjectDexDebugAndroidTest\\0\\classes.dex
+path.0=classes.dex
+path.1=0/classes.dex
+renamed.0=classes.dex
+renamed.1=classes2.dex
