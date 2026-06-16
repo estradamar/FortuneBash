@@ -2,6 +2,8 @@ package com.example.fortuneterminal;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.SpannableString;
 
 import java.text.SimpleDateFormat;
@@ -161,7 +163,7 @@ public class CommandEngine {
                                    Locale.US).format(new Date()));                                   break;
             case "echo":       result = out(args);                                                   break;
             case "roll":       result = out(cmdRoll(args));                                          break;
-            case "matrix":     result = out(generateMatrix());                                       break;
+            case "matrix":     startMatrixEffect(); result = null;                                   break;
             case "sudo":       result = out("This incident will be reported.");                      break;
             default:           result = out("'" + cmd + "' is not recognized. Type 'help'.");        break;
         }
@@ -404,16 +406,40 @@ public class CommandEngine {
 
     // matrix command ----------------------------------------------------------
 
-    private String generateMatrix() {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
-        StringBuilder sb = new StringBuilder();
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 38; col++) {
-                sb.append(chars.charAt(random.nextInt(chars.length())));
+    private void startMatrixEffect() {
+        final Handler handler = new Handler(Looper.getMainLooper());
+
+        // Initial flash animation to transition to color 0A (Light Green on Black)
+        currentBgColor = CMD_COLORS[0];
+        currentFgColor = CMD_COLORS[0xF]; // Flash White first
+        callback.onColorsChange(currentBgColor, currentFgColor);
+
+        handler.postDelayed(() -> {
+            currentBgColor = CMD_COLORS[0];
+            currentFgColor = CMD_COLORS[0xA]; // Then settle on Light Green
+            callback.onColorsChange(currentBgColor, currentFgColor);
+            saveColorCode("0A");
+
+            final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*!?;:+-*/=<>[]{}()";
+            final int rows = 32; // Quadruple the original 8 rows
+            final int cols = 40;
+
+            for (int i = 0; i < rows; i++) {
+                final int rowIdx = i;
+                handler.postDelayed(() -> {
+                    StringBuilder sb = new StringBuilder();
+                    for (int c = 0; c < cols; c++) {
+                        // Throw more random things with some gaps for a "rain" effect
+                        if (random.nextInt(10) > 8) {
+                            sb.append(" ");
+                        } else {
+                            sb.append(chars.charAt(random.nextInt(chars.length())));
+                        }
+                    }
+                    callback.onOutput(out(sb.toString()));
+                }, rowIdx * 65); // Appear more slowly (65ms per row)
             }
-            if (row < 7) sb.append("\n");
-        }
-        return sb.toString();
+        }, 250); // Short delay for the "flash" animation
     }
 
     // -------------------------------------------------------------------------

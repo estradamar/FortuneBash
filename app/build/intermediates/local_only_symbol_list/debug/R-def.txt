@@ -7,6 +7,7 @@ color purple_700
 color teal_200
 color teal_700
 color white
+drawable ic_launcher_retro
 id commandInput
 id input_layout
 id promptText

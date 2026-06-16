@@ -1,6 +1,14 @@
 [
     {
+        "merged": "C:\\Users\\estra\\.gradle\\daemon\\9.0-milestone-1\\com.example.fortuneterminal.app-merged_res-31:\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\estra\\.gradle\\daemon\\9.0-milestone-1\\com.example.fortuneterminal.app-main-33:\\layout\\activity_main.xml"
+    },
+    {
         "merged": "com.example.fortuneterminal.app-merged_res-31:/layout_activity_main.xml.flat",
         "source": "com.example.fortuneterminal.app-main-33:/layout/activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\estra\\.gradle\\daemon\\9.0-milestone-1\\com.example.fortuneterminal.app-merged_res-31:\\drawable_ic_launcher_retro.png.flat",
+        "source": "C:\\Users\\estra\\.gradle\\daemon\\9.0-milestone-1\\com.example.fortuneterminal.app-main-33:\\drawable\\ic_launcher_retro.png"
     }
 ]

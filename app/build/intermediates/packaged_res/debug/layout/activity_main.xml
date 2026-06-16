@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
+    android:clickable="true"
+    android:focusable="true"
     tools:context=".MainActivity">
 
     <ScrollView
@@ -13,7 +15,9 @@
         android:layout_height="match_parent"
         android:layout_above="@id/input_layout"
         android:padding="8dp"
-        android:fillViewport="false"
+        android:fillViewport="true"
+        android:clickable="true"
+        android:focusable="true"
         android:background="#00000000">
 
         <TextView
@@ -53,10 +57,12 @@
             android:background="#00000000"
             android:fontFamily="monospace"
             android:imeOptions="actionDone|flagNoExtractUi"
-            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:inputType="textNoSuggestions"
             android:textColor="#55FF55"
             android:textSize="14sp"
-            android:textCursorDrawable="@null" />
+            android:textCursorDrawable="@null"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
 
     </LinearLayout>
 
