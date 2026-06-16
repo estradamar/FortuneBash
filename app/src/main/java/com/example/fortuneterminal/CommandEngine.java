@@ -91,8 +91,10 @@ public class CommandEngine {
         Set<String> saved = prefs.getStringSet(KEY_ACTIVE_CATEGORIES, new HashSet<String>());
         activeCategories = new HashSet<>(saved);
         if (activeCategories.isEmpty()) {
+            Set<String> defaultOff = new HashSet<>(java.util.Arrays.asList(
+                    "debian", "goedel", "law", "miscellaneous", "perl", "platitudes"));
             for (String cat : fortuneManager.getAllCategories()) {
-                if (!fortuneManager.isOffensiveCategory(cat)) {
+                if (!fortuneManager.isOffensiveCategory(cat) && !defaultOff.contains(cat)) {
                     activeCategories.add(cat);
                 }
             }
@@ -179,6 +181,8 @@ public class CommandEngine {
             + "  fortune                - Display a random fortune.\n"
             + "  categories             - List fortune categories and their status.\n"
             + "  toggle [category]      - Enable or disable a fortune category.\n"
+            + "  toggle allon           - Turn all categories on.\n"
+            + "  toggle alloff          - Turn all categories off.\n"
             + "  color [BG][FG]         - Set colors via CMD hex code (e.g., color 0A).\n"
             + "  color list             - Show all CMD color codes (0-F).\n"
             + "  login [name]           - Set the active terminal username.\n"
@@ -193,12 +197,23 @@ public class CommandEngine {
     }
 
     private String getFortune() {
+        if (activeCategories.isEmpty()) {
+            return "No categories selected. Please select at least one category with 'toggle [category]' or 'toggle allon'.";
+        }
         return fortuneManager.getRandomFortune(new ArrayList<>(activeCategories));
     }
 
     private String getCategoriesList() {
+        List<String> all = fortuneManager.getAllCategories();
+        if (all.isEmpty()) {
+            return "No fortune categories found.\n\n"
+                 + "Place plain-text fortune files inside the app's asset folders:\n"
+                 + "  app/src/main/assets/datfiles/      <- safe categories\n"
+                 + "  app/src/main/assets/datfiles/off/  <- offensive categories\n\n"
+                 + "Each file should contain fortunes separated by a '%' on its own line.";
+        }
         StringBuilder sb = new StringBuilder("Fortune Categories:\n");
-        for (String cat : fortuneManager.getAllCategories()) {
+        for (String cat : all) {
             sb.append(activeCategories.contains(cat) ? "  [ON]  " : "  [OFF] ");
             sb.append(cat);
             if (fortuneManager.isOffensiveCategory(cat)) {
@@ -276,7 +291,17 @@ public class CommandEngine {
 
     private SpannableString cmdToggle(String args) {
         if (args.isEmpty()) {
-            return out("Usage: toggle [category]");
+            return out("Usage: toggle [category] | toggle allon | toggle alloff");
+        }
+        if (args.equals("allon")) {
+            activeCategories.addAll(fortuneManager.getAllCategories());
+            saveActiveCategories();
+            return out("All " + fortuneManager.getAllCategories().size() + " categories are now ON.");
+        }
+        if (args.equals("alloff")) {
+            activeCategories.clear();
+            saveActiveCategories();
+            return out("All categories are now OFF.");
         }
         if (!fortuneManager.getAllCategories().contains(args)) {
             return out("Category not found: '" + args + "'. Use 'categories' to list options.");

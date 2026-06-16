@@ -40,28 +40,63 @@ public class FortuneManager {
             String[] safeFiles = context.getAssets().list("datfiles");
             if (safeFiles != null) {
                 for (String filename : safeFiles) {
-                    if (filename.equals("off")) continue; // skip sub-directory entry
-                    loadCategory("datfiles/" + filename, filename, false);
-                    safeCategories.add(filename);
+                    if (isAssetDirectory("datfiles/" + filename)) continue;
+                    if (tryLoadCategory("datfiles/" + filename, filename)) {
+                        safeCategories.add(filename);
+                    }
                 }
             }
 
-            // Offensive categories live inside assets/datfiles/off/
+            // Pool every file in assets/datfiles/off/ into one single "ofensivo" category
+            List<String> offPool = new ArrayList<>();
             String[] offFiles = context.getAssets().list("datfiles/off");
             if (offFiles != null) {
                 for (String filename : offFiles) {
-                    String catName = "off/" + filename;
-                    loadCategory("datfiles/off/" + filename, catName, true);
-                    offCategories.add(catName);
+                    if (isAssetDirectory("datfiles/off/" + filename)) continue;
+                    try {
+                        List<String> entries = readFortuneEntries("datfiles/off/" + filename);
+                        offPool.addAll(entries);
+                        Log.d(TAG, "Pooled " + entries.size() + " fortunes from: datfiles/off/" + filename);
+                    } catch (IOException e) {
+                        Log.w(TAG, "Could not load 'datfiles/off/" + filename + "': " + e.getMessage());
+                    }
                 }
+            }
+            if (!offPool.isEmpty()) {
+                fortunes.put("ofensive", offPool);
+                offCategories.add("ofensive");
+            }
+
+            if (safeCategories.isEmpty() && offCategories.isEmpty()) {
+                Log.w(TAG, "No fortune files found. Place plain-text .dat files in:\n"
+                        + "  assets/datfiles/       (safe)\n"
+                        + "  assets/datfiles/off/   (offensive)");
             }
         } catch (IOException e) {
             Log.e(TAG, "Error listing fortune asset directories: " + e.getMessage());
         }
     }
 
-    private void loadCategory(String assetPath, String categoryName, boolean isOffensive)
-            throws IOException {
+    private boolean isAssetDirectory(String assetPath) {
+        try {
+            String[] entries = context.getAssets().list(assetPath);
+            return entries != null && entries.length > 0;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    private boolean tryLoadCategory(String assetPath, String categoryName) {
+        try {
+            loadCategory(assetPath, categoryName, false);
+            return true;
+        } catch (IOException e) {
+            Log.w(TAG, "Could not load '" + assetPath + "': " + e.getMessage());
+            return false;
+        }
+    }
+
+    private List<String> readFortuneEntries(String assetPath) throws IOException {
         StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(context.getAssets().open(assetPath)))) {
@@ -70,16 +105,18 @@ public class FortuneManager {
                 content.append(line).append("\n");
             }
         }
-
-        // Split on lines that are exactly '%' to avoid splitting inside fortune text.
         String[] raw = content.toString().split(FORTUNE_DELIMITER);
         List<String> entries = new ArrayList<>();
         for (String entry : raw) {
             String trimmed = entry.trim();
-            if (!trimmed.isEmpty()) {
-                entries.add(trimmed);
-            }
+            if (!trimmed.isEmpty()) entries.add(trimmed);
         }
+        return entries;
+    }
+
+    private void loadCategory(String assetPath, String categoryName, boolean isOffensive)
+            throws IOException {
+        List<String> entries = readFortuneEntries(assetPath);
         fortunes.put(categoryName, entries);
         Log.d(TAG, "Loaded " + entries.size() + " fortunes from: " + assetPath);
     }
