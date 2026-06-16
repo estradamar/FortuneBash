@@ -70,15 +70,29 @@ public class MainActivity extends AppCompatActivity implements CommandEngine.Ter
             return false;
         });
 
-        // Tapping the terminal area returns focus to the input field.
-        terminalOutput.setOnClickListener(v -> {
-            commandInput.requestFocus();
-            InputMethodManager imm =
-                (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.showSoftInput(commandInput, InputMethodManager.SHOW_IMPLICIT);
-            }
-        });
+        // Tapping anywhere in the terminal area returns focus to the input field.
+        rootLayout.setOnClickListener(v -> focusInput());
+        scrollView.setOnClickListener(v -> focusInput());
+        terminalOutput.setOnClickListener(v -> focusInput());
+
+        // Initial focus.
+        commandInput.requestFocus();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            focusInput();
+        }
+    }
+
+    private void focusInput() {
+        commandInput.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.showSoftInput(commandInput, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
     // -------------------------------------------------------------------------
