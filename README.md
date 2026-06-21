@@ -50,6 +50,29 @@ Because this app relies on the classic Unix `fortune` databases, you need to add
 
 5. Open the project in **Android Studio**, sync Gradle, build, and run!
 
+## Privacy Policy
+
+**Effective Date:** June 21, 2026
+
+**1. Data Collection and Usage**
+FortuneBash does not collect, store, transmit, or share any personal user data. All features, commands, and games within the app operate entirely offline and locally on your device.
+
+**2. Network Permissions (`ACCESS_NETWORK_STATE`)**
+The application requests the `ACCESS_NETWORK_STATE` permission solely to power the `ipconfig` in-game command. This command queries your device's local network interface to display local IP information as part of the terminal simulation experience. This information is printed locally to your screen and is never logged, tracked, or sent to any external servers or third-party services.
+
+**3. Third-Party Services**
+FortuneBash does not use any third-party analytics or advertising SDKs. 
+
+**4. Children's Privacy**
+Our service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from children under 13.
+
+**5. Changes to This Privacy Policy**
+We may update our Privacy Policy from time to time. Thus, you are advised to review this page periodically for any changes.
+
+---
+*For any questions regarding this privacy policy, please open an issue in this repository.*
+
+
 ## Credits
 - Fortune databases and original logic inspired by the Unix `fortune` program (maintained by Shlomi Fish).
 - Developed in Java for Android natively.
